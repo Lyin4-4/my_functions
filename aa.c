@@ -7,32 +7,34 @@ const char* my_strchr(const char* str, int ch);
 int my_strlen(const char* str);
 char* my_strcpy(char* str2, const char* str1);
 char* my_strncpy(char* str2, const char* str1, int n);
-void my_strcat(char* str, char* in_str);
-void my_strncat(char* str, char* in_str, int n);
-int my_atoi(char* str);
+char* my_strcat(const char* str, char* in_str);
+char* my_strncat(const char* str, char* in_str, int n);
+int my_atoi(const char* str);
 char* my_fgets(char *s, int n, FILE *iop);
-char* my_strdup(char* s);
-int my_getline(char* s, int n);
+char* my_strdup(const char* s);
+int my_getline(char** s, int n, FILE* iop);
 
 int main() {
     char asd[5] = "aaaa";
     char pis[100] = "gwrgr";
-    char baba[5] = "bbbb";
-    char s[7] = "ABABDG";
-    printf("%s\n", my_strcpy(baba, asd));
-    printf("%s\n", my_strncpy(baba, asd, 3));
+    char baba[5] = "";
+    char s[7] = "Ahntnt";
+    //printf("%s", my_strncat(asd, pis, 1));
+    //printf("%s\n", my_strcpy(baba, asd));
+    //printf("%s\n", my_strncpy(baba, asd, 2));
     /*
     printf("%c\n",*my_strchr("aaxdA", 'A'));
     printf("%d\n", my_strlen("spermasiski"));
     my_strncat(s, pis, 5);
     printf("%s\n", pis);
     printf("%d\n", my_atoi(asd));
-    printf("%s", my_fgets(baba, sizeof(baba), stdin));
-    printf("%s\n", my_strdup(s));
-    printf("%d\n", my_getline(baba, 100));
-    printf("%s\n", baba);
     */
-
+    //printf("%s", my_fgets(baba, sizeof(baba), stdin));
+    //printf("%s\n", my_strdup(s));
+    char* qwe = (char*) malloc(5);
+    char** bn = &qwe;
+    printf("%d\n", my_getline(bn, 5, stdin));
+    printf("%s\n", *bn);
     return 0;
 }
 
@@ -75,13 +77,13 @@ int my_strlen(const char* str) {
     return cnt;
 }
 
-char* my_strcpy(char* str2, const char* str1) {   //
+char* my_strcpy(char* str2, const char* str1) {
     assert(str1);
     assert(str2);
 
     char* var = str2;
 
-    while ((*str2 = *str1) != '\0') {  //
+    while ((*str2 = *str1) != '\0') {
         str2++;
         str1++;
     }
@@ -89,61 +91,70 @@ char* my_strcpy(char* str2, const char* str1) {   //
     return var;
 }
 
-char* my_strncpy(char* str2, const char* str1, int n) {  //
+char* my_strncpy(char* str2, const char* str1, int n) {
     assert(str1);
     assert(str2);
 
     int cnt = 0;
 
-    char* var = (char*) calloc(n, sizeof(char));
-    assert(var);
-    str2 = var;
+    char* var = str2;
+    *str2 = *str1;
+    cnt++;
 
-    while (((*var = *str1) != '\0') && (cnt++ < n)); {
-        printf("rf\n");
-        var++;
+    while ((*str2 != '\0') && (cnt++ < n)) {
+        str2++;
         str1++;
-        // (((*var = *str1) != '\0')) {
-        //    cnt++;
-        //    printf("yes\n");
-        //}
+        *str2 = *str1;
     }
 
-    return str2;
+    return var;
 }
 
-void my_strcat(char* str, char* in_str) {   //
+char* my_strcat(const char* str, char* in_str) {
     assert(str);
     assert(in_str);
 
-    while (*in_str++ != '\0');
+    char* var = in_str;
+
+    while (*in_str != '\0')
+        in_str++;
+
     in_str--;
+
     while (*str != '\0') {
         *in_str = *str;
         str++;
         in_str++;
     }
     *in_str = '\0';
+
+    return var;
 }
 
-void my_strncat(char* str, char* in_str, int n) {    //
+char* my_strncat(const char* str, char* in_str, int n) {
     assert(str);
     assert(in_str);
+
+    char* var = in_str;
 
     while (*in_str++ != '\0');
     in_str--;
 
     int cnt = 0;
 
-    while ((*str != '\0') && cnt++ < n){
+    while ((*str != '\0') && cnt < n){
+        cnt++;
         *in_str = *str;
         str++;
         in_str++;
     }
     *in_str = '\0';
+
+    return var;
 }
 
-int my_atoi(char* str) {
+int my_atoi(const char* str) {
+    assert(str);
 
     int n = 0;
 
@@ -155,7 +166,7 @@ int my_atoi(char* str) {
     return n;
 }
 
-char* my_fgets(char *s, int n, FILE *iop) {     // assert
+char* my_fgets(char *s, int n, FILE *iop) {
     assert(s);
     assert(iop);
 
@@ -164,23 +175,30 @@ char* my_fgets(char *s, int n, FILE *iop) {     // assert
     char* cs = 0;
 
     cs = s;
+    c = getc(iop);
+    cnt++;
 
-    while((cnt++ < n) && ((c = getc(iop)) != EOF)) {
-        if ((*cs++ = c) == '\n') {
+    while((cnt < n) && (c != EOF)) {
+        cnt++;
+        *cs = c;
+        if (*cs == '\n') {
+            cs++;
             break;
         }
+        cs++;
+        c = getc(iop);
     }
     *cs = '\0';
 
     return (c == EOF && cs == s) ? NULL : s;
 }
 
-char* my_strdup(char* s) {    // assert
+char* my_strdup(const char* s) {
     assert(s);
 
     char* p = NULL;
 
-    p = (char*) malloc(sizeof(s));    //
+    p = (char*) calloc(sizeof(s), sizeof(*s));
     assert(p);
 
     if (p != NULL) {
@@ -190,23 +208,45 @@ char* my_strdup(char* s) {    // assert
     return p;
 }
 
-int my_getline(char* s, int n) {   //
+int my_getline(char** s, int n, FILE* iop) {   //
     assert(s);
+    assert(iop);
+
+    char* var = *s;
 
     int cnt = 0;
     char c = 0;
 
-    while (cnt < n && (c = getchar()) != EOF && c != '\n') {
-        *s++ = c;
+    c = getchar();
+
+    while (cnt < n && (c != EOF && c != '\n')) {
+        if (cnt + 1 == n) {
+            printf("pizda\n");
+            var = (char*)realloc(var - cnt, 100);
+            n += 100;
+            assert(var);
+            s = &var;
+            var = var + cnt;
+        }
+        *var = c;
+        printf("%c", *var);
+        var++;
         cnt++;
+        c = getchar();
     }
 
     if (c == '\n') {
-        *s++ = c;
+        *var = c;
+        var++;
         cnt++;
     }
 
-    *s = '\0';
+    *var = '\0';
+
+    if (cnt < n) {
+        var = (char*)realloc(var - cnt, my_strlen(var));
+        s = &var;
+    }
 
     return cnt;
 }
