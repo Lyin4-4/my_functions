@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <assert.h>
 
 int my_puts(const char* str);
@@ -12,7 +13,7 @@ char* my_strncat(const char* str, char* in_str, int n);
 int my_atoi(const char* str);
 char* my_fgets(char *s, int n, FILE *iop);
 char* my_strdup(const char* s);
-int my_getline(char** s, int n, FILE* iop);
+int my_getline(char** s, int* n, FILE* iop);
 
 int main() {
     char asd[5] = "aaaa";
@@ -32,9 +33,11 @@ int main() {
     //printf("%s", my_fgets(baba, sizeof(baba), stdin));
     //printf("%s\n", my_strdup(s));
     char* qwe = (char*) malloc(5);
+    int sz = 5;
     char** bn = &qwe;
-    printf("%d\n", my_getline(bn, 5, stdin));
+    int xcxxcc = my_getline(bn, &sz, stdin);
     printf("%s\n", *bn);
+
     return 0;
 }
 
@@ -208,40 +211,45 @@ char* my_strdup(const char* s) {
     return p;
 }
 
-int my_getline(char** s, int n, FILE* iop) {   //
+int my_getline(char** s, int* n, FILE* iop) {   //
     assert(s);
     assert(iop);
 
     int cnt = 0;
     char c = 0;
 
-    c = getchar();
+    c = getc(iop);
 
-    while (cnt < n && (c != EOF && c != '\n')) {
-        if (cnt + 1 == n) {
-            *s = (char*)realloc(*s - cnt, n + 100);
-            n += 100;
+    while (cnt < *n && (c != EOF && c != '\n')) {
+        if (cnt + 1 == *n) {
+            *s = (char*)realloc(*s - cnt, *n + 100);
+            *n += 100;
             assert(*s);
             *s = *s + cnt;
         }
         **s = c;
+        printf("%c", **s);
         (*s)++;
         cnt++;
-        c = getchar();
+        c = getc(iop);
     }
 
     if (c == '\n') {
         **s = c;
+        cnt++;
         (*s)++;
         cnt++;
     }
 
     **s = '\0';
-
-    if (cnt < n) {
-        *s = (char*)realloc(*s - cnt, my_strlen(*s));
+    if (cnt < *n) {
+        *s = (char*)realloc(*s - cnt + 1, strlen(*s - cnt + 1) + 1);
+        assert(*s);
+    }
+    else {
+        *s -= (cnt + 1);
     }
 
-    return cnt;
+    return --cnt;
 }
 
