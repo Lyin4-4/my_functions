@@ -32,7 +32,7 @@ int main() {
     */
     //printf("%s", my_fgets(baba, sizeof(baba), stdin));
     //printf("%s\n", my_strdup(s));
-    char* qwe = (char*) malloc(5);
+    char* qwe = "";
     int sz = 5;
     char** bn = &qwe;
     int xcxxcc = my_getline(bn, &sz, stdin);
@@ -213,8 +213,10 @@ char* my_strdup(const char* s) {
 
 int my_getline(char** s, int* n, FILE* iop) {   //
     assert(s);
+    assert(n);
     assert(iop);
 
+    *s = (char*)calloc(*n, sizeof(char));
     int cnt = 0;
     char c = 0;
 
@@ -228,7 +230,6 @@ int my_getline(char** s, int* n, FILE* iop) {   //
             *s = *s + cnt;
         }
         **s = c;
-        printf("%c", **s);
         (*s)++;
         cnt++;
         c = getc(iop);
