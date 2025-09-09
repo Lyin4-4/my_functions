@@ -5,7 +5,7 @@
 
 int my_puts(const char* str);
 const char* my_strchr(const char* str, int ch);
-int my_strlen(const char* str);
+size_t my_strlen(const char* str);
 char* my_strcpy(char* str2, const char* str1);
 char* my_strncpy(char* str2, const char* str1, int n);
 char* my_strcat(const char* str, char* in_str);
@@ -37,6 +37,7 @@ int main() {
     char** bn = &qwe;
     int xcxxcc = my_getline(bn, &sz, stdin);
     printf("%s\n", *bn);
+    //printf("%d", my_strlen(pis));
 
     return 0;
 }
@@ -68,7 +69,7 @@ const char* my_strchr(const char* str, int ch) {
     return NULL;
 }
 
-int my_strlen(const char* str) {
+size_t my_strlen(const char* str) {
     assert(str);
 
     int cnt = 0;
@@ -218,12 +219,12 @@ int my_getline(char** s, size_t* n, FILE* iop) {   //
     assert(iop);
 
     *s = (char*)calloc(*n, sizeof(char));
+    assert(*s);
+
     int cnt = 0;
     char c = 0;
 
-    c = getc(iop);
-
-    while (cnt < *n && c != EOF) {
+    while (cnt < *n && (c = getc(iop)) != EOF) {
         if (cnt + 1 == *n) {
             *s = (char*)realloc(*s - cnt, *n + 100);
             *n += 100;
@@ -236,10 +237,14 @@ int my_getline(char** s, size_t* n, FILE* iop) {   //
             (*s)++;
             break;
         }
+
         **s = c;
         (*s)++;
         cnt++;
-        c = getc(iop);
+    }
+
+    if (c == EOF) {
+        return -1;
     }
 
     **s = '\0';
